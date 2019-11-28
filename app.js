@@ -3,16 +3,16 @@
 const amqp = require('amqplib/callback_api');
 const entities = require('./entities');
 
-async function start() {
+function start() {
   return new Promise((resolve, reject) => {
 
     amqp.connect('amqp://localhost', function(err, connection) {
       if (err) {
-        throw err;
+        reject(err);
       }
       connection.createChannel(function(err, channel) {
         if (err) {
-          throw err;
+          reject(err);
         }
         const queueName = 'socialmedia.cache.forward'; // @todo: get from config
 
@@ -34,6 +34,8 @@ async function start() {
             channel.ack(msg);
           });
         }, { noAck: false });
+
+        resolve();
       });
     });
   });
